@@ -897,7 +897,7 @@ module.exports = function(app) {
 	app.get('/alumnos', findAllAlumnos);
 	app.get('/alumno/:id', findById);
 	app.post('/alumno', addAlumno);
-	app.post('/alumno2', singIn);
+	app.post('/singIn', singIn);
 	app.put('/alumno/:id', updateAlumno);
 	app.delete('/alumno/:id', deleteAlumno);
   
