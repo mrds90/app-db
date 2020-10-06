@@ -2,6 +2,7 @@
   "name": "node-api-rest-example",
   "version": "0.0.1",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "3.2.6",
     "mongodb": "^3.6.2",
     "mongoose": "^3.6.11"

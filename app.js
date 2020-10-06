@@ -3,7 +3,11 @@ var express  = require("express"),
     http     = require("http"),
     server   = http.createServer(app),
     mongoose = require('mongoose'); 
-
+    var cors = require('cors');
+    var corsOptions = {origin:"*",optionSucessStatus:200};
+    
+    
+    app.use(cors(corsOptions));
 app.configure(function () {
   app.use(express.bodyParser());
   app.use(express.methodOverride());

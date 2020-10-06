@@ -5,7 +5,8 @@ var alumnoSchema = new Schema({
 	dni: 		{ type: String },
 	nombre:		{ type: String },
 	apellido: 	{ type: String },
-	mail:		{type: String } 
+	mail:		{type: String } ,
+	password:	{type: String } ,
 });
 
 
