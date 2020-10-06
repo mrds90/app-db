@@ -88,17 +88,17 @@ module.exports = function(app) {
   
   
 	singIn = async function(req, res){
-  
+    console.log('Sing In');
+		console.log('usuario: '+req.body.mail);
 		const { mail, password } = req.body;
-		console.log('pas: ' + password)
+		
 		await Alumno.findOne({mail}, function (err, docs) { 
 		  if (err || !docs){ 
 			  console.log('ERROR: '+ err) ;
-			  return res.status(401).send('usuario incorrecto')
+			  return res.status(401).send('error')
 		  } 
 		  else{ 
-			  console.log("pass: ", docs.password);
-			  if (docs.password !==password) return res.status(401).send('Contraseña incorrecta');
+			  if (docs.password !==password) return res.status(401).send('error');
 			  console.log("id : ", docs._id); 
 			  return res.status(200).send(docs._id)
 		  } 
