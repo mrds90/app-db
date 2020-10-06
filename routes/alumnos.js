@@ -92,7 +92,7 @@ module.exports = function(app) {
 		const { mail, password } = req.body;
 		console.log('pas: ' + password)
 		await Alumno.findOne({mail}, function (err, docs) { 
-		  if (err){ 
+		  if (err || !docs){ 
 			  console.log('ERROR: '+ err) ;
 			  return res.status(401).send('usuario incorrecto')
 		  } 
