@@ -382,11 +382,11 @@ module.exports = function(app) {
     	console.log(req.body);
   
     	var profesor = new Profesor({
-    		dni:    		req.body.dni,
+    	dni:    		req.body.dni,
   		nombre: 		req.body.nombre,
   		apellido:	 	req.body.apellido,  
   		mail:	 		req.body.mail,
-		  
+		password:	    req.body.password  
    	});
   
     	profesor.save(function(err) {
@@ -435,6 +435,26 @@ module.exports = function(app) {
     	});
     }
   
+
+	singInProfesor = async function(req, res){
+		console.log('Sing In');
+			console.log('usuario: '+req.body.mail);
+			const { mail, password } = req.body;
+			
+			await Profesor.findOne({mail}, function (err, docs) { 
+			  if (err || !docs){ 
+				  console.log('ERROR: '+ err) ;
+				  return res.status(401).send('error')
+			  } 
+			  else{ 
+				  if (docs.password !==password) return res.status(401).send('error');
+				  console.log("id : ", docs._id); 
+				  return res.status(200).send(docs._id)
+			  } 
+		  });
+		  
+		}
+
     var Alumno_Comision = require('../models/alumno_comision.js');
   
     //GET - Return all alumno_comisions in the DB
