@@ -554,8 +554,9 @@ module.exports = function(app) {
 		  var comisionMap = {};
 	  
 		  materia.forEach(function(comision) {
-			comisionMap[comision._id] = comision;
+			comisionMap[comision.id_comision] = comision.id_comision;
 		  });
+		  
 	  
 		  res.send(comisionMap);  
 		});
