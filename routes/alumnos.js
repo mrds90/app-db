@@ -238,7 +238,7 @@ module.exports = function(app) {
     //PUT - Update a register already exists
     updateComision = function(req, res) {
     	Comision.findById(req.params.id, function(err, comision) {
-    		comision.id			   	 = req.body.petId;
+    		comision.id			 = req.body.id;
   		comision.nombre   		 = req.body.nombre;
   		comision.clasesTotales   = req.body.clasesTotales;  
   
@@ -440,7 +440,6 @@ module.exports = function(app) {
 		console.log('Sing In');
 			console.log('usuario: '+req.body.mail);
 			const { mail, password } = req.body;
-			
 			await Profesor.findOne({mail}, function (err, docs) { 
 			  if (err || !docs){ 
 				  console.log('ERROR: '+ err) ;
@@ -549,7 +548,18 @@ module.exports = function(app) {
     		}
     	});
     };
-  
+	findComisionesDeMateria = function(req,res)
+	{ 
+		Materia_Comision.find({id_materia:req.params.id}, function(err, materia) {
+		  var comisionMap = {};
+	  
+		  materia.forEach(function(comision) {
+			comisionMap[comision._id] = comision;
+		  });
+	  
+		  res.send(comisionMap);  
+		});
+	};
     //GET - Return a Materia_Comision with specified ID
     findMateria_ComisionById = function(req, res) {
     	Materia_Comision.findById(req.params.id, function(err, materia_comision) {
@@ -568,9 +578,8 @@ module.exports = function(app) {
     	console.log(req.body);
   
     	var materia_comision = new Materia_Comision({
-    		id_comision:    	req.body.id_comision,
+    	id_comision:    	req.body.id_comision,
   		id_materia:			req.body.id_materia
-		  
    	});
   
     	materia_comision.save(function(err) {
@@ -881,8 +890,9 @@ module.exports = function(app) {
     app.delete('/profesor_comision/:id', deleteProfesor_Comision);
   
     //Link routes and functions
-    app.get('/materia_comisions', findAllMateria_Comisions);
-    app.get('/materia_comision/:id', findMateria_ComisionById);
+	app.get('/materia_comisions', findAllMateria_Comisions);
+	app.get('/listaDeComisiones/:id',findComisionesDeMateria);//id de la materia
+	app.get('/materia_comision/:id', findMateria_ComisionById);
     app.post('/materia_comision', addMateria_Comision);
     app.put('/materia_comision/:id', updateMateria_Comision);
     app.delete('/materia_comision/:id', deleteMateria_Comision);
