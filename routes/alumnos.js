@@ -486,8 +486,8 @@ module.exports = function(app) {
     	console.log(req.body);
   
     	var alumno_comision = new Alumno_Comision({
-    		id_comision:    	req.body.id_comision,
-  		dni_alumno:			req.body.dni_alumno
+    	id_comision:	    req.body.id_comision,
+  		id_alumno:			req.body.id_alumno
 		  
    	});
   
@@ -533,7 +533,21 @@ module.exports = function(app) {
     			}
     		})
     	});
-    }
+	}
+	
+	findComisionesDeAlumno = function(req,res)
+	{ 	console.log('buscando comisiones de alumno: ', req.params.id)
+		Alumno_Comision.find({id_alumno:req.params.id}, function(err, alumno) {
+		  var comisionMap = {};
+		  a=[];
+		  alumno.forEach(function(comision) {
+			a.push(comision.id_comision);
+		  });
+		  
+		  console.log('el id de las comisiones son: ',a)
+		  res.send(a);  
+		});
+	};
   
     var Materia_Comision = require('../models/materia_comision.js');
   
@@ -625,7 +639,23 @@ module.exports = function(app) {
     			}
     		})
     	});
-    }
+	}
+	
+	findMateriaDeComision = async function(req, res){
+		console.log('Buscar Materia');
+			console.log('id de la comision: '+ req.params.id);
+			await Materia_Comision.findOne({id_comision: req.params.id}, function (err, docs) { 
+			  if (err || !docs){ 
+				  console.log('ERROR: '+ err) ;
+				  return res.status(401).send('error')
+			  } 
+			  else{ 
+				  console.log("id de materia encontrada : ", docs.id_materia); 
+				  return res.status(200).send({data: docs.id_materia})
+			  } 
+		  });
+		  
+		}
   
     var Profesor_Comision = require('../models/profesor_comision.js');
   
@@ -893,17 +923,20 @@ module.exports = function(app) {
     //Link routes and functions
 	app.get('/materia_comisions', findAllMateria_Comisions);
 	app.get('/listaDeComisiones/:id',findComisionesDeMateria);//id de la materia
+	app.get('/materia_de_comision/:id',findMateriaDeComision);//id de la comision
 	app.get('/materia_comision/:id', findMateria_ComisionById);
     app.post('/materia_comision', addMateria_Comision);
     app.put('/materia_comision/:id', updateMateria_Comision);
     app.delete('/materia_comision/:id', deleteMateria_Comision);
   
     //Link routes and functions
-    app.get('/alumno_comisions', findAllAlumno_Comisions);
+	app.get('/alumno_comisions', findAllAlumno_Comisions);
+	app.get('/comisiones_de_alumno/:id',findComisionesDeAlumno);//id de la alumno
     app.get('/alumno_comision/:id', findAlumno_ComisionById);
     app.post('/alumno_comision', addAlumno_Comision);
     app.put('/alumno_comision/:id', updateAlumno_Comision);
-    app.delete('/alumno_comision/:id', deleteAlumno_Comision);
+	app.delete('/alumno_comision/:id', deleteAlumno_Comision);
+	
   
     //Link routes and functions
     app.get('/profesores', findAllProfesores);

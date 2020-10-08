@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 var alumno_comisionSchema = new Schema({
 	id_comision: 			{ type: String },
-	dni_alumno:				{ type: String },
+	id_alumno:				{ type: String },
 	
 });
 
