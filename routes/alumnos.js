@@ -552,13 +552,13 @@ module.exports = function(app) {
 	{ 
 		Materia_Comision.find({id_materia:req.params.id}, function(err, materia) {
 		  var comisionMap = {};
-	  
+		  a=[];
 		  materia.forEach(function(comision) {
-			comisionMap[comision.id_comision] = comision.id_comision;
+			a.push(comision.id_comision);
 		  });
 		  
 	  
-		  res.send(comisionMap);  
+		  res.send(a);  
 		});
 	};
     //GET - Return a Materia_Comision with specified ID
@@ -909,7 +909,7 @@ module.exports = function(app) {
     app.get('/profesores', findAllProfesores);
     app.get('/profesor/:id', findProfesorById);
 	app.post('/profesor', addProfesor);
-	app.post('/singIn', singInProfesor);
+	app.post('/singInProfesor', singInProfesor);
     app.put('/profesor/:id', updateProfesor);
     app.delete('/profesor/:id', deleteProfesor);
   
