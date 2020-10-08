@@ -907,7 +907,8 @@ module.exports = function(app) {
     //Link routes and functions
     app.get('/profesores', findAllProfesores);
     app.get('/profesor/:id', findProfesorById);
-    app.post('/profesor', addProfesor);
+	app.post('/profesor', addProfesor);
+	app.post('/singIn', singInProfesor);
     app.put('/profesor/:id', updateProfesor);
     app.delete('/profesor/:id', deleteProfesor);
   
