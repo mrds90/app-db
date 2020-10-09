@@ -541,10 +541,10 @@ module.exports = function(app) {
 		  var comisionMap = {};
 		  a=[];
 		  alumno.forEach(function(comision) {
-			a.push(comision.id_comision);
+			a.push(comision);
 		  });
 		  
-		  console.log('el id de las comisiones son: ',a)
+		  console.log('el id de las comisiones son: ',a.id_comision)
 		  res.send(a);  
 		});
 	};
@@ -651,7 +651,7 @@ module.exports = function(app) {
 			  } 
 			  else{ 
 				  console.log("id de materia encontrada : ", docs.id_materia); 
-				  return res.status(200).send({data: docs.id_materia})
+				  return res.status(200).send({_id:docs._id,id_materia: docs.id_materia})
 			  } 
 		  });
 		  
