@@ -487,7 +487,8 @@ module.exports = function(app) {
   
     	var alumno_comision = new Alumno_Comision({
     	id_comision:	    req.body.id_comision,
-  		id_alumno:			req.body.id_alumno
+		id_alumno:			req.body.id_alumno,
+		id_materia:	   		req.body.id_materia
 		  
    	});
   
@@ -505,8 +506,9 @@ module.exports = function(app) {
     //PUT - Update a register already exists
     updateAlumno_Comision = function(req, res) {
     	Alumno_Comision.findById(req.params.id, function(err, alumno_comision) {
-    		alumno_comision.id_comision			   	 = req.body.id_comision;
-  		alumno_comision.dni_alumno   		 = req.body.dni_alumno;
+    		alumno_comision.id_comision		   	 = req.body.id_comision;
+		  	alumno_comision.id_alumno	   		 = req.body.id_alumno;
+		  	alumno_comision.id_materia	   		 = req.body.id_materia;
 	  
   
 			
@@ -523,6 +525,7 @@ module.exports = function(app) {
   
     //DELETE - Delete a Alumno_Comision with specified ID
     deleteAlumno_Comision = function(req, res) {
+		console.log('registro a borrar: ',req.params.id)
     	Alumno_Comision.findById(req.params.id, function(err, alumno_comision) {
     		alumno_comision.remove(function(err) {
     			if(!err) {
@@ -542,9 +545,10 @@ module.exports = function(app) {
 		  a=[];
 		  alumno.forEach(function(comision) {
 			a.push(comision);
-		  });
+			console.log(' -	esta en comision: ',comision.id_comision)
+		});
 		  
-		  console.log('el id de las comisiones son: ',a.id_comision)
+		  
 		  res.send(a);  
 		});
 	};
@@ -708,7 +712,7 @@ module.exports = function(app) {
     //PUT - Update a register already exists
     updateProfesor_Comision = function(req, res) {
     	Profesor_Comision.findById(req.params.id, function(err, profesor_comision) {
-    		profesor_comision.id_comision		= req.body.id_comision;
+    	profesor_comision.id_comision		= req.body.id_comision;
   		profesor_comision.dni_profesor  	= req.body.dni_profesor;
 	  
   
