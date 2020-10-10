@@ -662,16 +662,11 @@ module.exports = function(app) {
     	});
 	}
 
-	depuracionMateria_Comision = function(id_comision)
-	{ 	console.log('buscando materias de comision: ', id_comision)
-		Matria_Comision.find({id_comision:id_comision}, function(err, registro) {
-		   deleteMateria_ComisionInterna(registro._id);
-		});
-	}
-	
-	function deleteMateria_Comision (id_registro) {
-    	Materia_Comision.findById(id_registro, function(err, materia_comision) {
-    		materia_comision.remove(function(err) {
+	depuracionMateria_Comision = function(id)
+	{ 	console.log('buscando materias de comision: ', id)
+		Materia_Comision.findOne({"id_comision":id}, function(err, registro) {
+			console.log('idcomision: ', registro.id_comision, ' con registro: ', registro._id);
+			registro.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
 					console.log('registro eliminado')
@@ -679,8 +674,9 @@ module.exports = function(app) {
     				console.log('ERROR: ' + err);
     			}
     		})
-    	});
+		});
 	}
+	
 
 	findMateriaDeComision = async function(req, res){
 		console.log('Buscar Materia');
@@ -801,8 +797,9 @@ module.exports = function(app) {
 	
 	depuracionComisiones = function(id_comision)
 	{ 	console.log('buscando profesores de comision: ', id_comision)
-		Profesor_Comision.find({id_comision:id_comision}, function(err, registro) {
-		  if (registro.id_profesor == undefined){
+		Profesor_Comision.findOne({"id_comision": id_comision}, function(err, registro) {
+			console.log('registro de comision con profesor', registro)
+		  if (registro == null){
 			  console.log('no hay profesores en la comision')
 			  deleteComisionInterna(id_comision);
 			  depuracionMateria_Comision(id_comision)
