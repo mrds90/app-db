@@ -988,6 +988,199 @@ module.exports = function(app) {
     	});
     }
   
+	var Aula_Comision = require('../models/aula_comision.js');
+  
+	//GET - Return all aula_comisions in the DB
+	findAllAula_Comisions = function(req, res) {
+		Aula_Comision.find(function(err, aula_comisions) {
+			if(!err) {
+		console.log('GET /aula_comisions')
+				res.send(aula_comisions);
+			} else {
+				console.log('ERROR: ' + err);
+			}
+		});
+	};
+
+	//GET - Return a Aula_Comision with specified ID
+	findAula_ComisionById = function(req, res) {
+		Aula_Comision.findById(req.params.id, function(err, aula_comision) {
+			if(!err) {
+		console.log('GET /aula_comision/' + req.params.id);
+				res.send(aula_comision);
+			} else {
+				console.log('ERROR: ' + err);
+			}
+		});
+	};
+
+	findAulaDeComision = function(req,res)
+	{ 	console.log('buscando aula de comision: ', req.params.id)
+		Aula_Comision.find({id_comision:req.params.id}, function(err, comision) {
+		  var comisionMap = {};
+		  a=[];
+		  comision.forEach(function(aula) {
+			a.push(aula);
+			console.log(' El aula de la comision es: ',aula.id_aula)
+		});
+		  
+		  
+		  res.send(a);  
+		});
+	};
+
+	//POST - Insert a new Aula_Comision in the DB
+	addAula_Comision = function(req, res) {
+		console.log('POST');
+		console.log(req.body);
+
+		var aula_comision = new Aula_Comision({
+			id_aula:    	req.body.id_aula,
+			id_comision:	req.body.id_comision
+		
+	});
+
+		aula_comision.save(function(err) {
+			if(!err) {
+				console.log('Created');
+			} else {
+				console.log('ERROR: ' + err);
+			}
+		});
+
+		res.send(aula_comision);
+	};
+
+	//PUT - Update a register already exists
+	updateAula_Comision = function(req, res) {
+		Aula_Comision.findById(req.params.id, function(err, aula_comision) {
+			aula_comision.id_aula = req.body.id_aula;
+		aula_comision.id_comision = req.body.id_comision;
+	
+
+			
+			aula_comision.save(function(err) {
+				if(!err) {
+					console.log('Updated');
+				} else {
+					console.log('ERROR: ' + err);
+				}
+				res.send(aula_comision);
+			});
+		});
+	}
+
+	//DELETE - Delete a Aula_Comision with specified ID
+	deleteAula_Comision = function(req, res) {
+		Aula_Comision.findById(req.params.id, function(err, aula_comision) {
+			aula_comision.remove(function(err) {
+				if(!err) {
+					console.log('Removed');
+					res.status(200).send('registro eliminado')
+				} else {
+					console.log('ERROR: ' + err);
+				}
+			})
+		});
+	}
+
+		var Aula = require('../models/aula.js');
+	
+	//GET - Return all aulas in the DB
+	findAllAulas = function(req, res) {
+		Aula.find(function(err, aulas) {
+			if(!err) {
+		console.log('GET /aulas')
+				res.send(aulas);
+			} else {
+				console.log('ERROR: ' + err);
+			}
+		});
+	};
+
+	//GET - Return a Aula with specified ID
+	findAulaById = function(req, res) {
+		Aula.findById(req.params.id, function(err, aula) {
+			if(!err) {
+		console.log('GET /aula/' + req.params.id);
+				res.send(aula);
+			} else {
+				console.log('ERROR: ' + err);
+			}
+		});
+	};
+
+	//POST - Insert a new Aula in the DB
+	addAula = function(req, res) {
+		console.log('POST');
+		console.log(req.body);
+
+		var aula = new Aula({
+			id_aula:    	req.body.id_aula,
+			id:	req.body.id
+		
+	});
+
+		aula.save(function(err) {
+			if(!err) {
+				console.log('Created');
+			} else {
+				console.log('ERROR: ' + err);
+			}
+		});
+
+		res.send(aula);
+	};
+
+	//PUT - Update a register already exists
+	updateAula = function(req, res) {
+		Aula.findById(req.params.id, function(err, aula) {
+			aula.id_aula = req.body.id_aula;
+		aula.id = req.body.id;
+	
+
+			
+			aula.save(function(err) {
+				if(!err) {
+					console.log('Updated');
+				} else {
+					console.log('ERROR: ' + err);
+				}
+				res.send(aula);
+			});
+		});
+	}
+
+	//DELETE - Delete a Aula with specified ID
+	deleteAula = function(req, res) {
+		Aula.findById(req.params.id, function(err, aula) {
+			aula.remove(function(err) {
+				if(!err) {
+					console.log('Removed');
+					res.status(200).send('registro eliminado')
+				} else {
+					console.log('ERROR: ' + err);
+				}
+			})
+		});
+	}
+
+	//Link routes and functions
+	app.get('/aulas', findAllAulas);
+	app.get('/aula/:id', findAulaById);
+	app.post('/aula', addAula);
+	app.put('/aula/:id', updateAula);
+	app.delete('/aula/:id', deleteAula);
+
+	//Link routes and functions
+	app.get('/aula_comisions', findAllAula_Comisions);
+	app.get('/aula_comision/:id', findAula_ComisionById);
+	app.get('/aula_de_comision/:id', findAulaDeComision);
+	app.post('/aula_comision', addAula_Comision);
+	app.put('/aula_comision/:id', updateAula_Comision);
+	app.delete('/aula_comision/:id', deleteAula_Comision);
+
+	
     //Link routes and functions
     app.get('/alumno_clases', findAllAlumno_Clases);
     app.get('/alumno_clase/:id', findAlumno_ClaseById);
