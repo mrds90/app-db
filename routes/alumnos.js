@@ -268,6 +268,18 @@ module.exports = function(app) {
     			}
     		})
     	});
+	}
+	deleteComisionInterna = function(id_comision) {
+    	Comision.findById(id_comision, function(err, comision) {
+    		comision.remove(function(err) {
+    			if(!err) {
+					console.log('Removed');
+					res.status(200).send('comisión eliminada')
+    			} else {
+    				console.log('ERROR: ' + err);
+    			}
+    		})
+    	});
     }
   
     var Clase = require('../models/clase.js');
@@ -555,35 +567,7 @@ module.exports = function(app) {
 		});
 	};	
 	
-	findComisionesDeProfesor = function(req,res)
-	{ 	console.log('buscando comisiones de profesor: ', req.params.id)
-		Profesor_Comision.find({id_profesor:req.params.id}, function(err, profesor) {
-		  var comisionMap = {};
-		  a=[];
-		  profesor.forEach(function(comision) {
-			a.push(comision);
-			console.log(' -	esta en comision: ',comision.id_comision)
-		});
-		  
-		  
-		  res.send(a);  
-		});
-	};	
 	
-	findProfesorDeComisiones = function(req,res)
-	{ 	console.log('buscando profesores de comision: ', req.params.id)
-		Profesor_Comision.find({id_comision:req.params.id}, function(err, comision) {
-		  var comisionMap = {};
-		  a=[];
-		  comision.forEach(function(profesor) {
-			a.push(profesor);
-			console.log(' Los docentes de la comision son: ',profesor.id_profesor)
-		});
-		  
-		  
-		  res.send(a);  
-		});
-	};
   
     var Materia_Comision = require('../models/materia_comision.js');
   
@@ -765,8 +749,10 @@ module.exports = function(app) {
     //DELETE - Delete a Profesor_Comision with specified ID
     deleteProfesor_Comision = function(req, res) {
     	Profesor_Comision.findById(req.params.id, function(err, profesor_comision) {
-    		profesor_comision.remove(function(err) {
+			let id_comision = profesor_comision.id_comision;
+			profesor_comision.remove(function(err) {
     			if(!err) {
+					depuracionComisiones(id_comision)
 					console.log('Removed');
 					res.status(200).send('registro eliminado')
     			} else {
@@ -775,7 +761,50 @@ module.exports = function(app) {
     		})
     	});
     }
-  
+	
+	findComisionesDeProfesor = function(req,res)
+	{ 	console.log('buscando comisiones de profesor: ', req.params.id)
+		Profesor_Comision.find({id_profesor:req.params.id}, function(err, profesor) {
+		  var comisionMap = {};
+		  a=[];
+		  profesor.forEach(function(comision) {
+			a.push(comision);
+			console.log(' -	esta en comision: ',comision.id_comision)
+		});
+		  
+		  
+		  res.send(a);  
+		});
+	};	
+	
+	depuracionComisiones = function(id_comision)
+	{ 	console.log('buscando profesores de comision: ', id_comision)
+		Profesor_Comision.find({id_comision:id_comision}, function(err, comision) {
+		  if (err){
+			  console.log('no hay profesores en la comision')
+			  Comision.deleteComisionInterna(id_comision);
+		  }
+		  else{
+			  console.log('Quedan profesores')
+		  }
+		});
+
+
+	findProfesorDeComisiones = function(req,res)
+	{ 	console.log('buscando profesores de comision: ', req.params.id)
+		Profesor_Comision.find({id_comision:req.params.id}, function(err, comision) {
+		  var comisionMap = {};
+		  a=[];
+		  comision.forEach(function(profesor) {
+			a.push(profesor);
+			console.log(' Los docentes de la comision son: ',profesor.id_profesor)
+		});
+		  
+		  
+		  res.send(a);  
+		});
+	};
+
     var Clase_Comision = require('../models/clase_comision.js');
   
     //GET - Return all clase_comisions in the DB
