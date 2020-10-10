@@ -568,6 +568,21 @@ module.exports = function(app) {
 		  
 		  res.send(a);  
 		});
+	};	
+	
+	findProfesorDeComisiones = function(req,res)
+	{ 	console.log('buscando profesores de comision: ', req.params.id)
+		Profesor_Comision.find({id_comision:req.params.id}, function(err, comision) {
+		  var comisionMap = {};
+		  a=[];
+		  comision.forEach(function(profesor) {
+			a.push(profesor);
+			console.log(' Los docentes de la comision son: ',profesor.id_profesor)
+		});
+		  
+		  
+		  res.send(a);  
+		});
 	};
   
     var Materia_Comision = require('../models/materia_comision.js');
@@ -939,6 +954,7 @@ module.exports = function(app) {
     //Link routes and functions
 	app.get('/profesor_comisions', findAllProfesor_Comisions);
 	app.get('/comisiones_de_profesor/:id',findComisionesDeProfesor);//id del profesor
+	app.get('/profesor_de_comision/:id',findProfesorDeComisiones);//id comision
 	app.get('/profesor_comision/:id', findProfesor_ComisionById);
     app.post('/profesor_comision', addProfesor_Comision);
     app.put('/profesor_comision/:id', updateProfesor_Comision);
