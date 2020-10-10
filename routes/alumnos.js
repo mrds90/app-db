@@ -788,6 +788,7 @@ module.exports = function(app) {
 			  console.log('Quedan profesores')
 		  }
 		});
+	}
 
 
 	findProfesorDeComisiones = function(req,res)
