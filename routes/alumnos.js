@@ -545,7 +545,7 @@ module.exports = function(app) {
     		alumno_comision.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
-					res.status(200).send('registro eliminado')
+					res.status(200).send({mensaje:'registro eliminado'})
     			} else {
     				console.log('ERROR: ' + err);
     			}
@@ -654,7 +654,7 @@ module.exports = function(app) {
     		materia_comision.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
-					res.status(200).send('registro eliminado')
+					res.status(200).send({mensaje:'registro eliminado'})
     			} else {
     				console.log('ERROR: ' + err);
     			}
@@ -669,7 +669,7 @@ module.exports = function(app) {
 			registro.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
-					console.log('registro eliminado')
+					console.log({mensaje:'registro eliminado'})
     			} else {
     				console.log('ERROR: ' + err);
     			}
@@ -772,7 +772,7 @@ module.exports = function(app) {
 					console.log('chequearé la comision: ', id_comision)
 					depuracionComisiones(id_comision)
 					console.log('Removed');
-					res.status(200).send('registro eliminado')
+					res.status(200).send({mensaje:'registro eliminado'})
     			} else {
     				console.log('ERROR: ' + err);
     			}
@@ -900,7 +900,7 @@ module.exports = function(app) {
     		clase_comision.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
-					res.status(200).send('registro eliminado')
+					res.status(200).send({mensaje:'registro eliminado'})
     			} else {
     				console.log('ERROR: ' + err);
     			}
@@ -980,7 +980,7 @@ module.exports = function(app) {
     		alumno_clase.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
-					res.status(200).send('registro eliminado')
+					res.status(200).send({mensaje:'registro eliminado'})
     			} else {
     				console.log('ERROR: ' + err);
     			}
@@ -1076,7 +1076,7 @@ module.exports = function(app) {
 			aula_comision.remove(function(err) {
 				if(!err) {
 					console.log('Removed');
-					res.status(200).send('registro eliminado')
+					res.status(200).send({mensaje:'registro eliminado'})
 				} else {
 					console.log('ERROR: ' + err);
 				}
@@ -1157,7 +1157,7 @@ module.exports = function(app) {
 			aula.remove(function(err) {
 				if(!err) {
 					console.log('Removed');
-					res.status(200).send('registro eliminado')
+					res.status(200).send({mensaje:'registro eliminado'})
 				} else {
 					console.log('ERROR: ' + err);
 				}
