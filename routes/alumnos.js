@@ -661,7 +661,27 @@ module.exports = function(app) {
     		})
     	});
 	}
+
+	depuracionMateria_Comision = function(id_comision)
+	{ 	console.log('buscando materias de comision: ', id_comision)
+		Matria_Comision.find({id_comision:id_comision}, function(err, registro) {
+		   deleteMateria_ComisionInterna(registro._id);
+		});
+	}
 	
+	function deleteMateria_Comision (id_registro) {
+    	Materia_Comision.findById(id_registro, function(err, materia_comision) {
+    		materia_comision.remove(function(err) {
+    			if(!err) {
+					console.log('Removed');
+					console.log('registro eliminado')
+    			} else {
+    				console.log('ERROR: ' + err);
+    			}
+    		})
+    	});
+	}
+
 	findMateriaDeComision = async function(req, res){
 		console.log('Buscar Materia');
 			console.log('id de la comision: '+ req.params.id);
@@ -785,6 +805,8 @@ module.exports = function(app) {
 		  if (registro.id_profesor == undefined){
 			  console.log('no hay profesores en la comision')
 			  deleteComisionInterna(id_comision);
+			  depuracionMateria_Comision(id_comision)
+
 		  }
 		  else{
 			  console.log('Queda el profesor: ', registro.id_profesor, ' en ', registro.id_comision)
