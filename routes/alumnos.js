@@ -4,7 +4,8 @@ const profesor = require('../models/profesor.js');
 module.exports = function(app) {
 
 	var Alumno = require('../models/alumno.js');
-  
+	var Comision = require('../models/comision.js');
+
 	//GET - Return all alumnos in the DB
 	findAllAlumnos = function(req, res) {
 		Alumno.find(function(err, alumnos) {
@@ -189,7 +190,6 @@ module.exports = function(app) {
     }
   
   
-    var Comision = require('../models/comision.js');
   
     //GET - Return all comisiones in the DB
     findAllComisiones = function(req, res) {
@@ -269,12 +269,13 @@ module.exports = function(app) {
     		})
     	});
 	}
-	deleteComisionInterna = function(id_comision) {
+	function deleteComisionInterna (id_comision) {
+		console.log('este es el id en deletecomisioninterna',id_comision)
     	Comision.findById(id_comision, function(err, comision) {
     		comision.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
-					res.status(200).send('comisión eliminada')
+					console.log('comisión eliminada')
     			} else {
     				console.log('ERROR: ' + err);
     			}
@@ -752,6 +753,7 @@ module.exports = function(app) {
 			let id_comision = profesor_comision.id_comision;
 			profesor_comision.remove(function(err) {
     			if(!err) {
+					console.log('chequearé la comision: ', id_comision)
 					depuracionComisiones(id_comision)
 					console.log('Removed');
 					res.status(200).send('registro eliminado')
@@ -779,13 +781,13 @@ module.exports = function(app) {
 	
 	depuracionComisiones = function(id_comision)
 	{ 	console.log('buscando profesores de comision: ', id_comision)
-		Profesor_Comision.find({id_comision:id_comision}, function(err, comision) {
-		  if (err){
+		Profesor_Comision.find({id_comision:id_comision}, function(err, registro) {
+		  if (registro.id_profesor == undefined){
 			  console.log('no hay profesores en la comision')
-			  Comision.deleteComisionInterna(id_comision);
+			  deleteComisionInterna(id_comision);
 		  }
 		  else{
-			  console.log('Quedan profesores')
+			  console.log('Queda el profesor: ', registro.id_profesor, ' en ', registro.id_comision)
 		  }
 		});
 	}
