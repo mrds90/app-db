@@ -1,3 +1,5 @@
+const profesor = require('../models/profesor.js');
+
 //File: routes/alumnos.js
 module.exports = function(app) {
 
@@ -551,6 +553,21 @@ module.exports = function(app) {
 		  
 		  res.send(a);  
 		});
+	};	
+	
+	findComisionesDeProfesor = function(req,res)
+	{ 	console.log('buscando comisiones de profesor: ', req.params.id)
+		Profesor_Comision.find({id_profesor:req.params.id}, function(err, profesor) {
+		  var comisionMap = {};
+		  a=[];
+		  profesor.forEach(function(comision) {
+			a.push(comision);
+			console.log(' -	esta en comision: ',comision.id_comision)
+		});
+		  
+		  
+		  res.send(a);  
+		});
 	};
   
     var Materia_Comision = require('../models/materia_comision.js');
@@ -693,8 +710,9 @@ module.exports = function(app) {
     	console.log(req.body);
   
     	var profesor_comision = new Profesor_Comision({
-    		id_comision:    	req.body.id_comision,
-  		dni_profesor:		req.body.dni_profesor
+    	id_comision:    	req.body.id_comision,
+		id_profesor:		req.body.id_profesor,
+		id_materia:		req.body.id_materia
 		  
    	});
   
@@ -713,7 +731,8 @@ module.exports = function(app) {
     updateProfesor_Comision = function(req, res) {
     	Profesor_Comision.findById(req.params.id, function(err, profesor_comision) {
     	profesor_comision.id_comision		= req.body.id_comision;
-  		profesor_comision.dni_profesor  	= req.body.dni_profesor;
+		profesor_comision.id_profesor  	= req.body.id_profesor;
+		profesor_comision.id_materia  	= req.body.id_materia;
 	  
   
 			
@@ -918,8 +937,9 @@ module.exports = function(app) {
     app.delete('/clase_comision/:id', deleteClase_Comision);
   
     //Link routes and functions
-    app.get('/profesor_comisions', findAllProfesor_Comisions);
-    app.get('/profesor_comision/:id', findProfesor_ComisionById);
+	app.get('/profesor_comisions', findAllProfesor_Comisions);
+	app.get('/comisiones_de_profesor/:id',findComisionesDeProfesor);//id del profesor
+	app.get('/profesor_comision/:id', findProfesor_ComisionById);
     app.post('/profesor_comision', addProfesor_Comision);
     app.put('/profesor_comision/:id', updateProfesor_Comision);
     app.delete('/profesor_comision/:id', deleteProfesor_Comision);
@@ -935,7 +955,7 @@ module.exports = function(app) {
   
     //Link routes and functions
 	app.get('/alumno_comisions', findAllAlumno_Comisions);
-	app.get('/comisiones_de_alumno/:id',findComisionesDeAlumno);//id de la alumno
+	app.get('/comisiones_de_alumno/:id',findComisionesDeAlumno);//id del alumno
     app.get('/alumno_comision/:id', findAlumno_ComisionById);
     app.post('/alumno_comision', addAlumno_Comision);
     app.put('/alumno_comision/:id', updateAlumno_Comision);
