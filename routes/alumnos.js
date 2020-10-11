@@ -31,28 +31,34 @@ module.exports = function(app) {
 	};
   
 	//POST - Insert a new Alumno in the DB
-	addAlumno = function(req, res) {
+	addAlumno = async function(req, res) {
 		console.log('POST');
 		console.log(req.body);
-  
-		var alumno = new Alumno({
-			dni:    	req.body.dni,
-			nombre: 	req.body.nombre,
-			apellido:  	req.body.apellido,
-			mail:	    req.body.mail,
-		  	password:   req.body.password
 			
-		});
+		await Alumno.findOne({dni:req.body.dni}, function (err, docs) { 
+			if (!docs)	{
+				var alumno = new Alumno({
+					dni:    	req.body.dni,
+					nombre: 	req.body.nombre,
+					apellido:  	req.body.apellido,
+					mail:	    req.body.mail,
+					password:   req.body.password
+				});
   
-		alumno.save(function(err) {
-			if(!err) {
-				console.log('Created');
+				alumno.save(function(err) {
+					if(!err) {
+						console.log('Created');
+					} else {
+						console.log('ERROR: ' + err);
+					}
+				});
+		
+				res.send(alumno);
 			} else {
-				console.log('ERROR: ' + err);
-			}
+				console.log('Ya esta registrado un alumno con este DNI')
+				return res.status(401).send({mensaje:'Ya esta registrado un alumno con este DNI'})
+			};
 		});
-  
-		res.send(alumno);
 	};
   
 	//PUT - Update a register already exists
@@ -92,15 +98,16 @@ module.exports = function(app) {
   
 	singInAlumno = async function(req, res){
     console.log('Sing In');
-		console.log('usuario: '+req.body.mail);
-		const { mail, password } = req.body;
+		console.log('usuario: '+req.body.dni);
+		const { dni, password } = req.body;
 		
-		await Alumno.findOne({mail}, function (err, docs) { 
+		await Alumno.findOne({dni:dni}, function (err, docs) { 
 		  if (err || !docs){ 
 			  console.log('ERROR: '+ err) ;
 			  return res.status(401).send('error')
 		  } 
 		  else{ 
+			  console.log(docs.password)
 			  if (docs.password !==password) return res.status(401).send('error');
 			  console.log("id : ", docs._id); 
 			  return res.status(200).send(docs._id)
