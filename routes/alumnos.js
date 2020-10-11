@@ -1116,8 +1116,8 @@ module.exports = function(app) {
 		console.log(req.body);
 
 		var aula = new Aula({
-			id_aula:    	req.body.id_aula,
-			id:	req.body.id
+			id:req.body.id,
+			nombre:	req.body.nombre
 		
 	});
 
@@ -1135,8 +1135,8 @@ module.exports = function(app) {
 	//PUT - Update a register already exists
 	updateAula = function(req, res) {
 		Aula.findById(req.params.id, function(err, aula) {
-			aula.id_aula = req.body.id_aula;
-		aula.id = req.body.id;
+			aula.id = req.body.id;
+		aula.nombre = req.body.nombre;
 	
 
 			
