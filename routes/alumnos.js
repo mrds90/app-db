@@ -346,27 +346,15 @@ module.exports = function(app) {
 					 	console.log('retorna false')
 					}
 					for (let alumno_comision of alumno_comisions){
-						Alumno.findById(alumno_comision.id_alumno, function(err, alumno) {
-					 		alumno.remove(function(err) {
-					 			if(!err) {
-									
-					 				console.log('Alumno Removed');
-								
-								} else {
-									console.log('ERROR: ' + err);
-								}
-							})
-							alumno_comision.remove(function(err) {
-								if(!err) {
-								   
-									console.log('Alumno_Comision Removed');
+						alumno_comision.remove(function(err) {
+							if(!err) {
 							   
-							   } else {
-								   console.log('ERROR: ' + err);
-							   }
-						   })
-						
-						});
+								console.log('Alumno_Comision Removed');
+						   
+						   } else {
+							   console.log('ERROR: ' + err);
+						   }
+					   })
 
 					}
 			})
