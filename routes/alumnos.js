@@ -1,4 +1,5 @@
 
+const e = require('express');
 const profesor = require('../models/profesor.js');
 
 //File: routes/alumnos.js
@@ -268,6 +269,7 @@ module.exports = function(app) {
     deleteComision = function(req, res) {
     	Comision.findById(req.params.id, function(err, comision) {
 			borrarClasesDeComision (comision._id)
+			borrarAlumnosDeComision(id_comision)
 			comision.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
@@ -281,6 +283,7 @@ module.exports = function(app) {
 	function deleteComisionInterna (id_comision) {
 		console.log('este es el id en deletecomisioninterna',id_comision)
 		borrarClasesDeComision (id_comision)
+		borrarAlumnosDeComision(id_comision)
     	Comision.findById(id_comision, function(err, comision) {
     		comision.remove(function(err) {
     			if(!err) {
@@ -306,8 +309,6 @@ module.exports = function(app) {
 					}
 					for (let clase_comision of clase_comisions){
 						Clase.findById(clase_comision.id_clase, function(err, clase) {
-					 		id_clase=clase.id;
-							
 					 		clase.remove(function(err) {
 					 			if(!err) {
 									
@@ -321,6 +322,44 @@ module.exports = function(app) {
 								if(!err) {
 								   
 									console.log('Clase_Comision Removed');
+							   
+							   } else {
+								   console.log('ERROR: ' + err);
+							   }
+						   })
+						
+						});
+
+					}
+			})
+	}
+
+
+
+	async function borrarAlumnosDeComision (id_comision) {
+		
+		console.log('borar clases de comision: ',id_comision)
+			await Alumno_Comision.find({id_comision:id_comision}, async function(err, alumno_comisions) {
+					// console.log('registro de clase_comision', clase_comisions)
+					if (alumno_comisions == null){
+						console.log('no hay registros con esa clase')
+					 	console.log('retorna false')
+					}
+					for (let alumno_comision of alumno_comisions){
+						Alumno.findById(alumno_comision.id_alumno, function(err, alumno) {
+					 		alumno.remove(function(err) {
+					 			if(!err) {
+									
+					 				console.log('Alumno Removed');
+								
+								} else {
+									console.log('ERROR: ' + err);
+								}
+							})
+							alumno_comision.remove(function(err) {
+								if(!err) {
+								   
+									console.log('Alumno_Comision Removed');
 							   
 							   } else {
 								   console.log('ERROR: ' + err);
@@ -368,44 +407,55 @@ module.exports = function(app) {
 	crearClases = function(req, res) {
     	console.log('POST');
     	console.log(req.body);
-  
-		var inicio= new Date(req.body.año,req.body.mes,req.body.dia,req.body.hora,req.body.minutos,00);
-		inicio.setDate(inicio.getDate()-7)
-		for (var i=0;i<req.body.cantidad; i++){
-		 fecha=new Date(inicio.setDate(inicio.getDate()+7))
-		 fin=new Date (fecha);
-		 fin.addHours(req.body.duracion);
-		 var clase=new Clase({
-			inicio: fecha,
-			fin: fin,
-			aula: req.body.aula
-		});
-		var clase_comision=new Clase_Comision({
-			id_clase: clase._id,
-			id_comision: req.body.id_comision
-		});
-		
-				clase.save(function(err) {
-					if(!err) {
-						// console.log('Created');
-					} else {
-						console.log('ERROR: ' + err);
-						res.status(401).send({mensaje:'error'})
-					}
-				});
-				clase_comision.save(function(err) {
-					if(!err) {
-						// console.log('Created');
-					} else {
-						console.log('ERROR: ' + err);
-						res.status(401).send({mensaje:'error'})
-					}
-				});
-		  
+		Comision.findById(req.body.id_comision, function(err,comision) 
+		{
+			if (comision!=null)
+			{	
 				
-		}
-		console.log('clases creadas');
-		res.status(200).send({mensaje:'clases creadas'})
+				var inicio= new Date(req.body.año,req.body.mes,req.body.dia,req.body.hora,req.body.minutos,00);
+
+				inicio.setDate(inicio.getDate()-7)
+				for (var i=0;i<req.body.cantidad; i++){
+				fecha=new Date(inicio.setDate(inicio.getDate()+7))
+				fin=new Date (fecha);
+				fin.addHours(req.body.duracion);
+				var clase=new Clase({
+					inicio: fecha,
+					fin: fin,
+					aula: req.body.aula
+				});
+				var clase_comision=new Clase_Comision({
+					id_clase: clase._id,
+					id_comision: req.body.id_comision
+				});
+				
+						clase.save(function(err) {
+							if(!err ) {
+								console.log('Created');
+							} else {
+								console.log('ERROR: ' + err);
+								res.status(401).send({mensaje:'error'})
+							}
+						});
+						clase_comision.save(function(err) {
+							if(!err) {
+								// console.log('Created');
+							} else {
+								console.log('ERROR: ' + err);
+								res.status(401).send({mensaje:'error'})
+							}
+						});
+				
+						
+				}
+				console.log('clases creadas');
+				res.status(200).send({mensaje:'clases creadas'})
+			}
+			else {
+				console.log('ERROR: no existe la comision');
+				res.status(401).send({mensaje:'no existe la comision'});
+			}
+		})
     };
 
     //POST - Insert a new Clase in the DB
