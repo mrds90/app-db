@@ -267,7 +267,8 @@ module.exports = function(app) {
     //DELETE - Delete a Comision with specified ID
     deleteComision = function(req, res) {
     	Comision.findById(req.params.id, function(err, comision) {
-    		comision.remove(function(err) {
+			borrarClasesDeComision (comision._id)
+			comision.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
 					res.status(200).send({mensaje:'comisión eliminada'})
@@ -279,17 +280,60 @@ module.exports = function(app) {
 	}
 	function deleteComisionInterna (id_comision) {
 		console.log('este es el id en deletecomisioninterna',id_comision)
+		borrarClasesDeComision (id_comision)
     	Comision.findById(id_comision, function(err, comision) {
     		comision.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
 					console.log('comisión eliminada')
-    			} else {
+				} else {
     				console.log('ERROR: ' + err);
     			}
     		})
     	});
-    }
+	}
+	
+
+	
+	async function borrarClasesDeComision (id_comision) {
+		
+		console.log('borar clases de comision: ',id_comision)
+			await Clase_Comision.find({id_comision:id_comision}, async function(err, clase_comisions) {
+					// console.log('registro de clase_comision', clase_comisions)
+					if (clase_comisions == null){
+						console.log('no hay registros con esa clase')
+					 	console.log('retorna false')
+					}
+					for (let clase_comision of clase_comisions){
+						Clase.findById(clase_comision.id_clase, function(err, clase) {
+					 		id_clase=clase.id;
+							
+					 		clase.remove(function(err) {
+					 			if(!err) {
+									
+					 				console.log('Clase Removed');
+								
+								} else {
+									console.log('ERROR: ' + err);
+								}
+							})
+							clase_comision.remove(function(err) {
+								if(!err) {
+								   
+									console.log('Clase_Comision Removed');
+							   
+							   } else {
+								   console.log('ERROR: ' + err);
+							   }
+						   })
+						
+						});
+
+					}
+			})
+	}
+
+
   
     var Clase = require('../models/clase.js');
   
@@ -336,8 +380,20 @@ module.exports = function(app) {
 			fin: fin,
 			aula: req.body.aula
 		});
+		var clase_comision=new Clase_Comision({
+			id_clase: clase._id,
+			id_comision: req.body.id_comision
+		});
 		
 				clase.save(function(err) {
+					if(!err) {
+						// console.log('Created');
+					} else {
+						console.log('ERROR: ' + err);
+						res.status(401).send({mensaje:'error'})
+					}
+				});
+				clase_comision.save(function(err) {
 					if(!err) {
 						// console.log('Created');
 					} else {
@@ -353,26 +409,28 @@ module.exports = function(app) {
     };
 
     //POST - Insert a new Clase in the DB
-    addClase = function(req, res) {
-    	console.log('POST');
-    	console.log(req.body);
+    // addClase = function(req, res) {
+    // 	console.log('POST');
+    // 	console.log(req.body);
   
-    	var clase = new Clase({
-    	dia:	 	req.body.dia,
-  		hora: 		req.body.hora,
-  		aula:	 	req.body.aula
-   	});
+    // 	var clase = new Clase({
+    // 	dia:	 	req.body.dia,
+  	// 	hora: 		req.body.hora,
+  	// 	aula:	 	req.body.aula
+   	// });
   
-    	clase.save(function(err) {
-    		if(!err) {
-    			console.log('Created');
-    		} else {
-    			console.log('ERROR: ' + err);
-    		}
-    	});
+    // 	clase.save(function(err) {
+    // 		if(!err) {
+    // 			console.log('Created');
+    // 		} else {
+    // 			console.log('ERROR: ' + err);
+    // 		}
+	// 	});
+	// 	//OJO!!! NO GUARDA EN REGISTRO CLASE COMISION!!!
+	// 	});
   
-    	res.send(clase);
-    };
+    // 	res.send(clase);
+    // };
   
     //PUT - Update a register already exists
     updateClase = function(req, res) {
@@ -396,6 +454,7 @@ module.exports = function(app) {
     //DELETE - Delete a Clase with specified ID
     deleteClase = function(req, res) {
     	Clase.findById(req.params.id, function(err, clase) {
+			deleteClase_ComisionPorIdDeClase(clase._id);
     		clase.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
@@ -404,7 +463,9 @@ module.exports = function(app) {
     				console.log('ERROR: ' + err);
     			}
     		})
-    	});
+		
+			
+		});
     }
   
     var Profesor = require('../models/profesor.js');
@@ -948,7 +1009,32 @@ module.exports = function(app) {
     			}
     		})
     	});
-    }
+	}
+	deleteClase_ComisionPorIdDeClase = async function(id_clase) {
+		await Clase_Comision.findOne({"id_clase": id_clase}, function(err, clase_comisions) {
+			//console.log('registro de clase_comision', clase_comisions)
+			if (clase_comisions == null){
+			console.log('no hay registros con esa clase')
+			}
+			else{
+				clase_comisions.remove(function(err) {
+					if(!err) {
+						console.log('Clase_Comision Removed');
+						console.log('Retorna True');
+
+						return true;
+					} else {
+						console.log('ERROR: ' + err);
+						console.log('Retorna False');
+						return false
+					}
+				})
+			}
+		})
+	};
+	
+
+
     var Alumno_Clase = require('../models/alumno_clase.js');
   
     //GET - Return all alumno_clases in the DB
@@ -1275,7 +1361,7 @@ module.exports = function(app) {
     //Link routes and functions
     app.get('/clases', findAllClases);
     app.get('/clase/:id', findClaseById);
-	app.post('/clase', addClase);
+	// app.post('/clase', addClase);
 	app.post('/crear_clases', crearClases);
     app.put('/clase/:id', updateClase);
     app.delete('/clase/:id', deleteClase);
