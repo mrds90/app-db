@@ -1,3 +1,4 @@
+
 const profesor = require('../models/profesor.js');
 
 //File: routes/alumnos.js
@@ -148,9 +149,9 @@ module.exports = function(app) {
     	console.log('POST');
     	console.log(req.body);
   
-    	var materia = new Materia({
-    		id:    		req.body.id,
-    		nombre: 	req.body.nombre
+			var materia = new Materia({
+				id:    		req.body.id,
+				nombre: 	req.body.nombre
    	});
   
     	materia.save(function(err) {
@@ -269,7 +270,7 @@ module.exports = function(app) {
     		comision.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
-					res.status(200).send('comisión eliminada')
+					res.status(200).send({mensaje:'comisión eliminada'})
     			} else {
     				console.log('ERROR: ' + err);
     			}
@@ -315,15 +316,49 @@ module.exports = function(app) {
     		}
     	});
     };
+	Date.prototype.addHours = function(h) {
+		this.setTime(this.getTime() + (h*60*60*1000));
+		return this;
+	  }
+	  
+	crearClases = function(req, res) {
+    	console.log('POST');
+    	console.log(req.body);
   
+		var inicio= new Date(req.body.año,req.body.mes,req.body.dia,req.body.hora,req.body.minutos,00);
+		inicio.setDate(inicio.getDate()-7)
+		for (var i=0;i<req.body.cantidad; i++){
+		 fecha=new Date(inicio.setDate(inicio.getDate()+7))
+		 fin=new Date (fecha);
+		 fin.addHours(req.body.duracion);
+		 var clase=new Clase({
+			inicio: fecha,
+			fin: fin,
+			aula: req.body.aula
+		});
+		
+				clase.save(function(err) {
+					if(!err) {
+						// console.log('Created');
+					} else {
+						console.log('ERROR: ' + err);
+						res.status(401).send({mensaje:'error'})
+					}
+				});
+		  
+				
+		}
+		console.log('clases creadas');
+		res.status(200).send({mensaje:'clases creadas'})
+    };
+
     //POST - Insert a new Clase in the DB
     addClase = function(req, res) {
     	console.log('POST');
     	console.log(req.body);
   
     	var clase = new Clase({
-    		id:    		req.body.id,
-  		dia:	 	req.body.dia,
+    	dia:	 	req.body.dia,
   		hora: 		req.body.hora,
   		aula:	 	req.body.aula
    	});
@@ -1240,7 +1275,8 @@ module.exports = function(app) {
     //Link routes and functions
     app.get('/clases', findAllClases);
     app.get('/clase/:id', findClaseById);
-    app.post('/clase', addClase);
+	app.post('/clase', addClase);
+	app.post('/crear_clases', crearClases);
     app.put('/clase/:id', updateClase);
     app.delete('/clase/:id', deleteClase);
   

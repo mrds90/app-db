@@ -7,8 +7,8 @@ var express  = require("express"),
     var corsOptions = {origin:"*",optionSucessStatus:200};
     
     
-    app.use(cors(corsOptions));
-app.configure(function () {
+  app.use(cors(corsOptions));
+  app.configure(function () {
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
