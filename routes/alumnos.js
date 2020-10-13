@@ -387,8 +387,8 @@ module.exports = function(app) {
     		}
     	});
     };
-	Date.prototype.addHours = function(h) {
-		this.setTime(this.getTime() + (h*60*60*1000));
+	Date.prototype.addTime = function(h,m) {
+		this.setTime(this.getTime() + (h*60*60*1000)+(m*60*1000));
 		return this;
 	  }
 	  
@@ -406,7 +406,7 @@ module.exports = function(app) {
 				for (var i=0;i<req.body.cantidad; i++){
 				fecha=new Date(inicio.setDate(inicio.getDate()+7))
 				fin=new Date (fecha);
-				fin.addHours(req.body.duracion);
+				fin.addTime(req.body.duracion_h,req.body.duracion_m);
 				var clase=new Clase({
 					inicio: fecha,
 					fin: fin,
@@ -505,7 +505,35 @@ module.exports = function(app) {
 			
 		});
     }
-  
+	
+	findClasesDeComision = async function(req,res)
+	{ 	console.log('buscando Clases de comision: ', req.params.id)
+		let a=[];
+		await Clase_Comision.find({id_comision:req.params.id}, function(err, comision) {
+		  
+		  	if (comision.length>0)
+			{
+				comision.forEach(async function(clase) {
+					await Clase.findById({_id:clase.id_clase}, function(err, clase)
+					{
+						a.push(clase);	
+						console.log('Las clases de la comision son: ',clase._id)
+						if (comision.length==a.length) res.send(a);
+					})
+
+				});
+				   
+			  }
+			else {
+				console.log('Las comision no tiene clases')
+				res.send([]);   
+			};
+		  
+		  
+		
+		});
+
+	};
     var Profesor = require('../models/profesor.js');
   
     //GET - Return all profesores in the DB
@@ -1356,7 +1384,8 @@ module.exports = function(app) {
   
     //Link routes and functions
     app.get('/clase_comisions', findAllClase_Comisions);
-    app.get('/clase_comision/:id', findClase_ComisionById);
+	app.get('/clase_comision/:id', findClase_ComisionById);
+	app.get('/clases_de_comision/:id',findClasesDeComision);//id comision
     app.post('/clase_comision', addClase_Comision);
     app.put('/clase_comision/:id', updateClase_Comision);
     app.delete('/clase_comision/:id', deleteClase_Comision);
