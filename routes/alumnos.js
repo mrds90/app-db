@@ -420,7 +420,7 @@ module.exports = function(app) {
 				if (clase_comision != []){
 					console.log('entro al if clase_comision', clase_comision.id_comision)
 
-					Alumno_Comision.findOne({id_comision: clase_comision.id_comision}, function(err, alumnocomision){
+					Alumno_Comision.findOne({id_comision: clase_comision.id_comision , id_alumno:req.body.id_alumno}, function(err, alumnocomision){
 						console.log('alumnocomisions: ', alumnocomision)
 						if(alumnocomision.id_alumno==req.body.id_alumno) {
 							console.log('entro al if')
