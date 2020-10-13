@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 var alumno_claseSchema = new Schema({
 	id_clase: 			{ type: String },
-	dni_alumno:				{ type: String },
+	id_alumno:				{ type: String },
 	
 });
 

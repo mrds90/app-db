@@ -32,6 +32,7 @@ var express  = require("express"),
   res.send("Hello world!");
 });
 
+
 routes = require('./routes/alumnos')(app);
 
 mongoose.connect('mongodb+srv://myt:mata@cluster0.5dbpm.gcp.mongodb.net/aplicacion?retryWrites=true&w=majority', function(err, res) {
@@ -45,3 +46,4 @@ mongoose.connect('mongodb+srv://myt:mata@cluster0.5dbpm.gcp.mongodb.net/aplicaci
 server.listen(app.get('port'), () => {
   console.log(`Server on port ${app.get('port')}`);
 });
+

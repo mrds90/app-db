@@ -1,13 +1,19 @@
 
 const e = require('express');
+const alumno = require('../models/alumno.js');
 const profesor = require('../models/profesor.js');
+
 
 //File: routes/alumnos.js
 module.exports = function(app) {
-
+	setInterval(function(){ 
+		findClaseByFecha();
+	}, 2000);//run this thang every 2 seconds
 	var Alumno = require('../models/alumno.js');
 	var Comision = require('../models/comision.js');
+	var Alumno_Clase = require('../models/alumno_clase.js');
 
+	var clasesActivas =[];
 	//GET - Return all alumnos in the DB
 	findAllAlumnos = function(req, res) {
 		Alumno.find(function(err, alumnos) {
@@ -374,8 +380,85 @@ module.exports = function(app) {
     			console.log('ERROR: ' + err);
     		}
     	});
-    };
-  
+	};
+	
+	//GET - Clases Activas
+
+	 function findClaseByFecha () {
+		  let ahoramas = new Date();
+		  let ahoramenos = new Date();
+		let clasesActuales = [];
+		  ahoramas = new Date (ahoramas.addTime(0,15));
+		  ahoramenos = new Date (ahoramenos.removeTime(0,15));
+
+		  Clase.find(function(err, clases) {
+    		if(!err) {
+				for (let clase of clases){
+					if (clase.inicio > ahoramenos && clase.inicio < ahoramas){
+						clasesActuales.push(clase)
+					}
+				}
+				clasesActivas = clasesActuales;
+          //console.log('clasesActivas Actualizada:', clasesActivas)
+    		} else {
+    			console.log('ERROR: ' + err);
+    		}
+    	});
+    	
+	};
+
+	// Marcar asistencia- recibe alumno+ aula / chequea clases activas con el aula /agrega al alumno a registro alumno_clase con el id
+    marcarAsistencia = function(req, res) {
+		console.log('clasesActivas Actualizada:', clasesActivas)
+
+		console.log(req.body.aula_nombre)
+		let clase = clasesActivas.filter(claseActiva => claseActiva.aula == req.body.aula_nombre);
+		if (clase.length == 1){
+			console.log('la clase es: ', clase[0]._id)
+			Clase_Comision.findOne({id_clase: clase[0]._id}, function(err, clase_comision) {
+				console.log('clase comision es: ',clase_comision)
+				if (clase_comision != []){
+					console.log('entro al if clase_comision', clase_comision.id_comision)
+
+					Alumno_Comision.findOne({id_comision: clase_comision.id_comision}, function(err, alumnocomision){
+						console.log('alumnocomisions: ', alumnocomision)
+						if(alumnocomision.id_alumno==req.body.id_alumno) {
+							console.log('entro al if')
+							var alumnoClase = new Alumno_Clase ({
+							id_alumno: req.body.id_alumno,
+							id_clase: clase._id});
+							alumnoClase.save(function(err) {
+								if(!err ) {
+									console.log('Created');
+									res.send({mensaje: 'Registro asistencia concretado'})
+								} else {
+									console.log('ERROR: ' + err);
+									res.status(401).send({mensaje:'error'})
+								}
+							});
+						}
+
+										
+					})
+					 
+				}
+			  else {
+				  console.log('Las comision no tiene clases')
+				  res.send({mensaje: 'no se registró asistencia'})
+				};
+			
+			
+		  
+		  });
+	}
+	else    { 
+		console.log('ERROR: hay más de una clase o no hay clases en el aula');
+		res.send({mensaje: 'no se registró asistencia'})
+}
+
+}
+	
+
     //GET - Return a Clase with specified ID
     findClaseById = function(req, res) {
     	Clase.findById(req.params.id, function(err, clase) {
@@ -389,6 +472,11 @@ module.exports = function(app) {
     };
 	Date.prototype.addTime = function(h,m) {
 		this.setTime(this.getTime() + (h*60*60*1000)+(m*60*1000));
+		return this;
+	  }
+
+	  Date.prototype.removeTime = function(h,m) {
+		this.setTime(this.getTime() - (h*60*60*1000)-(m*60*1000));
 		return this;
 	  }
 	  
@@ -1101,7 +1189,6 @@ module.exports = function(app) {
 	
 
 
-    var Alumno_Clase = require('../models/alumno_clase.js');
   
     //GET - Return all alumno_clases in the DB
     findAllAlumno_Clases = function(req, res) {
@@ -1408,6 +1495,7 @@ module.exports = function(app) {
     app.put('/materia_comision/:id', updateMateria_Comision);
     app.delete('/materia_comision/:id', deleteMateria_Comision);
   
+	
     //Link routes and functions
 	app.get('/alumno_comisions', findAllAlumno_Comisions);
 	app.get('/comisiones_de_alumno/:id',findComisionesDeAlumno);//id del alumno
@@ -1431,7 +1519,10 @@ module.exports = function(app) {
 	// app.post('/clase', addClase);
 	app.post('/crear_clases', crearClases);
     app.put('/clase/:id', updateClase);
-    app.delete('/clase/:id', deleteClase);
+	app.delete('/clase/:id', deleteClase);
+	app.post('/marcar_asistencia',marcarAsistencia)
+
+
   
     //Link routes and functions
     app.get('/comisiones', findAllComisiones);
