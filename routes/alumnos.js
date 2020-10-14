@@ -1,6 +1,7 @@
 
 const e = require('express');
 const alumno = require('../models/alumno.js');
+const clase_comision = require('../models/clase_comision.js');
 const profesor = require('../models/profesor.js');
 
 
@@ -1267,7 +1268,41 @@ module.exports = function(app) {
     			}
     		})
     	});
-    }
+	}
+	
+	function findAlumno_ClasesDeAlumnoByComision(id_comision,id_alumno,res)
+	{	clasesAsistidas=[];
+		let promesas=[];
+		console.log(id_comision)
+		Clase_Comision.find({id_comision : id_comision},async function(err,clase_comisions){
+			
+			for(let clase_comision of clase_comisions){
+			console.log(clase_comision)
+			//Falta acomodoar los registros alumno_clases para probar bien
+			promesas.push(Alumno_Clase.findOne({id_alumno:id_alumno,id_clase:clase_comision.id_clase},async function(err,alumno_clase){
+				if (alumno_clase!=null){
+					clasesAsistidas.push(alumno_clase);
+					console.log('hice el push')
+				}
+
+			}))
+			}
+			for (let promesa of promesas)
+			{
+				await promesa
+				console.log('espero')
+			}
+			console.log('return',clasesAsistidas)
+			res.status(200).send(clasesAsistidas)
+		})
+	}
+
+	verAsisitencias = function(req, res) {
+    	console.log('CONSULTAR ASISTENCIA');
+    	console.log(req.body);
+		findAlumno_ClasesDeAlumnoByComision(req.body.id_comision,req.body.id_alumno,res)
+		// res.status(200).send(findAlumno_ClasesDeAlumnoByComision(req.body.id_comision,req.body.id_alumno));
+   	}
   
 	var Aula_Comision = require('../models/aula_comision.js');
   
@@ -1465,9 +1500,11 @@ module.exports = function(app) {
     //Link routes and functions
     app.get('/alumno_clases', findAllAlumno_Clases);
     app.get('/alumno_clase/:id', findAlumno_ClaseById);
-    app.post('/alumno_clase', addAlumno_Clase);
+	app.post('/alumno_clase', addAlumno_Clase);
+	app.post('/consultar_asistencia', verAsisitencias);
     app.put('/alumno_clase/:id', updateAlumno_Clase);
-    app.delete('/alumno_clase/:id', deleteAlumno_Clase);
+	app.delete('/alumno_clase/:id', deleteAlumno_Clase);
+	verAsisitencias
   
     //Link routes and functions
     app.get('/clase_comisions', findAllClase_Comisions);
@@ -1475,7 +1512,8 @@ module.exports = function(app) {
 	app.get('/clases_de_comision/:id',findClasesDeComision);//id comision
     app.post('/clase_comision', addClase_Comision);
     app.put('/clase_comision/:id', updateClase_Comision);
-    app.delete('/clase_comision/:id', deleteClase_Comision);
+	app.delete('/clase_comision/:id', deleteClase_Comision);
+	
   
     //Link routes and functions
 	app.get('/profesor_comisions', findAllProfesor_Comisions);
