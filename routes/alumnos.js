@@ -420,14 +420,20 @@ module.exports = function(app) {
 				console.log('clase comision es: ',clase_comision)
 				if (clase_comision != []){
 					console.log('entro al if clase_comision', clase_comision.id_comision)
-
-					Alumno_Comision.findOne({id_comision: clase_comision.id_comision , id_alumno:req.body.id_alumno}, function(err, alumnocomision){
+					
+					Alumno_Comision.findOne({id_comision: clase_comision.id_comision , id_alumno: req.body.id_alumno}, function(err, alumnocomision){
 						console.log('alumnocomisions: ', alumnocomision)
+						Alumno_Clase.find({id_alumno: req.body.id_alumno, id_clase: clase[0]._id}, function(err, alumno_clase){
+							console.log('alumno_clase es: ', alumno_clase)
+							if(alumno_clase.length==0){
+
 						if(alumnocomision.id_alumno==req.body.id_alumno) {
 							console.log('entro al if')
+							console.log('id_clase: ', clase[0]._id)
 							var alumnoClase = new Alumno_Clase ({
 							id_alumno: req.body.id_alumno,
-							id_clase: clase._id});
+							id_clase: clase[0]._id});
+
 							alumnoClase.save(function(err) {
 								if(!err ) {
 									console.log('Created');
@@ -436,8 +442,15 @@ module.exports = function(app) {
 									console.log('ERROR: ' + err);
 									res.status(401).send({mensaje:'error'})
 								}
+								
 							});
+							
+						}}
+						else{
+							console.log('ERROR: alumno ya registrado en la clase');
+							res.status(401).send({mensaje:'Alumno ya registrado en la clase'})
 						}
+					});
 
 										
 					})
