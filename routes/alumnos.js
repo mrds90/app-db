@@ -1283,8 +1283,65 @@ module.exports = function(app) {
     	});
 	}
 	
+	verAlumnosEnClase = function(req, res) {
+    	console.log('VER ALUMNOS DE CLASE DE COMISION');
+    	console.log(req.body);
+		findAlumno_ClasesDeComision(req.body.id_comision,res)
+		// res.status(200).send(findAlumno_ClasesDeAlumnoByComision(req.body.id_comision,req.body.id_alumno));
+   	}
+	
+	function findAlumno_ClasesDeComision(id_comision,res)
+	{	let clasesAsistidas=[];
+		let promesas=[];
+		console.log(id_comision)
+		Clase_Comision.find({id_comision : id_comision},async function(err,clase_comisions){
+			
+			for(let clase_comision of clase_comisions){
+			console.log(clase_comision)
+			//Falta acomodoar los registros alumno_clases para probar bien
+			promesas.push(Alumno_Clase.find({id_clase:clase_comision.id_clase},async function(err,alumno_clase){
+				if (alumno_clase!=null){
+					clasesAsistidas.push(alumno_clase);
+				}
+
+			}))
+			}
+			for (let promesa of promesas)
+			{
+				await promesa
+				console.log('espero')
+			}
+			promesa =[]
+			let alumnos = []
+				for (let clase of clasesAsistidas){
+					 console.log('clase: ', clase)
+					if (clase!= undefined){
+					for (let alumno_clase of clase){
+						promesas.push(Alumno.findById(alumno_clase.id_alumno, function(err, alumno) {
+						if(!err) {
+				  			console.log('alumno es:', alumno.nombre + " " + alumno.apellido);
+							let index1 = clasesAsistidas.indexOf(clase);
+							let index2 = clase.indexOf(alumno_clase);
+							clasesAsistidas[index1][index2] = (alumno.nombre + " " + alumno.apellido);
+						} else {
+								console.log('ERROR: ' + err);
+								}
+						}));
+					}}
+				}
+				console.log(clasesAsistidas)
+				for (let promesa of promesas)
+				{
+				await promesa
+				console.log('espero')
+				}
+			console.log('return: ')
+			res.status(200).send(clasesAsistidas)
+		})
+	}
+
 	function findAlumno_ClasesDeAlumnoByComision(id_comision,id_alumno,res)
-	{	clasesAsistidas=[];
+	{	let clasesAsistidas=[];
 		let promesas=[];
 		console.log(id_comision)
 		Clase_Comision.find({id_comision : id_comision},async function(err,clase_comisions){
@@ -1305,7 +1362,7 @@ module.exports = function(app) {
 				await promesa
 				console.log('espero')
 			}
-			console.log('return',clasesAsistidas)
+			console.log('return: ',clasesAsistidas)
 			res.status(200).send(clasesAsistidas)
 		})
 	}
@@ -1515,9 +1572,9 @@ module.exports = function(app) {
     app.get('/alumno_clase/:id', findAlumno_ClaseById);
 	app.post('/alumno_clase', addAlumno_Clase);
 	app.post('/consultar_asistencia', verAsisitencias);
+	app.post('/alumnos_en_clase', verAlumnosEnClase);
     app.put('/alumno_clase/:id', updateAlumno_Clase);
 	app.delete('/alumno_clase/:id', deleteAlumno_Clase);
-	verAsisitencias
   
     //Link routes and functions
     app.get('/clase_comisions', findAllClase_Comisions);
