@@ -1310,7 +1310,7 @@ module.exports = function(app) {
 	
 	verAlumnosEnClase = function(req, res) {
     	console.log('VER ALUMNOS DE CLASE DE COMISION');
-    	console.log(req.body);
+    	console.log(req.body.id_comision);
 		findAlumno_ClasesDeComision(req.body.id_comision,res)
 		// res.status(200).send(findAlumno_ClasesDeAlumnoByComision(req.body.id_comision,req.body.id_alumno));
    	}
