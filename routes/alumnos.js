@@ -595,6 +595,8 @@ module.exports = function(app) {
     deleteClase = function(req, res) {
     	Clase.findById(req.params.id, function(err, clase) {
 			deleteClase_ComisionPorIdDeClase(clase._id);
+			deleteAlumno_ClasePorIdDeClase(clase._id);
+
     		clase.remove(function(err) {
     			if(!err) {
 					console.log('Removed');
@@ -1201,6 +1203,29 @@ module.exports = function(app) {
 		})
 	};
 	
+
+	deleteAlumno_ClasePorIdDeClase = async function(id_clase) {
+		await Alumno_Clase.findOne({"id_clase": id_clase}, function(err, alumno_clases) {
+			//console.log('registro de clase_comision', alumno_clases)
+			if (alumno_clases == null){
+			console.log('no hay registros con esa clase')
+			}
+			else{
+				alumno_clases.remove(function(err) {
+					if(!err) {
+						console.log('Alumno_Clase Removed');
+						console.log('Retorna True');
+
+						return true;
+					} else {
+						console.log('ERROR: ' + err);
+						console.log('Retorna False');
+						return false
+					}
+				})
+			}
+		})
+	};
 
 
   
